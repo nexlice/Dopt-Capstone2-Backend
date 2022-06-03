@@ -54,7 +54,7 @@ const rule = '0 0 9 * * *';
 // python child process 코드입니다.
 // pythonOne.stdout.on에서는 python 코드에서 print 되는 코드를 data1에 저장하고
 // python.on('close')에서는 data1에 저장된 결과를 send합니다.
-app.get('/Match/get', (req, res)=>{
+app.get('/Match/get', (req, res)=>{ 
     let data1="";
 	var name = req.query.name;
 	var userEmail = req.query.userEmail;
