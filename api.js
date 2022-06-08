@@ -62,7 +62,7 @@ app.get('/Match/get', (req, res)=>{
 	var age = req.query.age;
 	var sex = req.query.sex;
 	var color = req.query.color;
-	var type = req.query.type;
+	var type = req.query.type; 
 	var userLoc = req.query.userLoc;
 	const fs = require('fs');
 	//https://stackoverflow.com/questions/42755142/pass-muliple-args-to-a-python-script-spawned-from-node-js

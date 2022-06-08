@@ -8,16 +8,6 @@ from pandas.io.json import json_normalize
 import numpy as np
 import sys
 
-# 사용자 preference 정보
-# https://needneo.tistory.com/95 
-val_name = str(sys.argv[1])
-val_userEmail = str(sys.argv[2])
-val_breed = str(sys.argv[3])
-val_age = str(sys.argv[4])
-val_sex = str(sys.argv[5])
-val_color = str(sys.argv[6])
-val_type = str(sys.argv[7])
-val_userLoc = str(sys.argv[8])
 
 
 def getAnimalInfo(userLoc):
@@ -53,10 +43,11 @@ def getAnimalRecommend(userPreference, animalInfos):
     animalScore = [] # 동물 API 정보를 대응 정렬 시키기 위한 score
 
     # 사용자의 선호도 정보 변수에 저장
-    userBreed = userPreference[0]
-    userAge = userPreference[1]
-    userSex = userPreference[2]
-    userColor = userPreference[3]
+    userBreed = userPreference[0] # 치와와
+    userAge = int(userPreference[1]) # 2
+    userSex = userPreference[2] # M / F
+    userColor = userPreference[3] # 흰색, 노란색,,
+    userType = userPreference[4] # 개, 고양이, 기타
     # userLoc = userPreference[4]
 
     # 각 동물들의 정보를 사용자 선호도 정보와 비교해가며 점수를 책정
@@ -64,7 +55,6 @@ def getAnimalRecommend(userPreference, animalInfos):
 
     if len(animalInfos)>1:
         for index, animalInfo in animalInfos.iterrows():
-
             # 점수 초기화
             score = 0
 
@@ -78,45 +68,76 @@ def getAnimalRecommend(userPreference, animalInfos):
             '''
             animalAge = datetime.today().year - int(animalInfo['age'][0:4]) +1 # 한국식 나이 계산
             animalColor = animalInfo['colorCd'] # 색깔 정보는 전처리 필요
-            animalBreed = animalInfo['kindCd'][4:]
-            animalSex = '암컷' if animalInfo['sexCd'] == 'F' else '수컷' # 암컷, 수컷으로 변경
+            animalBreed = animalInfo['kindCd'].split(' ')[1] # ex) 치와와
+            animalType = animalInfo['kindCd'].split(' ')[0][1:-1] # ex) 개, 고양이
+            animalSex = animalInfo['sexCd']
+
+            if animalBreed == '한국':
+                continue
+
+            # print(userAge, animalAge)
+            # print(userType, animalType)
+            # print(userColor, animalColor)
+            # print(userBreed, animalBreed)
+            # print(userSex, animalSex)
+            
+            
+            # animalSex = '암컷' if animalInfo['sexCd'] == 'F' else '수컷' # 암컷, 수컷으로 변경
             
             # 점수 책정
             if animalBreed == userBreed:
                 score+=10000
+            if animalType == userType:
+                score+=1000
+            else:
+                score-=1000
             if animalSex == userSex:
                 score+=100
             if animalColor == userColor:
                 score+=100
             score-=abs(userAge-animalAge)*100 # 나이 차이가 많이 날수록 score가 낮아짐
+
             
             animalScore.append(score)
             animalRecommend.append([animalInfo['age'],animalInfo['careAddr'],animalInfo['careNm'],animalInfo['careTel'],animalInfo['chargeNm'],animalInfo['colorCd'],animalInfo['desertionNo'],animalInfo['filename'],animalInfo['happenDt'],animalInfo['happenPlace'],animalInfo['kindCd'],animalInfo['neuterYn'],animalInfo['noticeEdt'],animalInfo['noticeNo'],animalInfo['noticeSdt'],animalInfo['officetel'],animalInfo['orgNm'],animalInfo['popfile'],animalInfo['processState'],animalInfo['sexCd'],animalInfo['specialMark']])
             
-
+    sorted_index_animalScore = np.argsort(animalScore)
+    sorted_animalRecommend = [animalRecommend[i] for i in sorted_index_animalScore]
+    # 위에꺼 설명
     # animalRecommend를 score가 높은 순으로 정렬
     # https://bit.ly/39GI9M2 (파이썬 다중 리스트 정렬)
-    # animalRecommend.sort(key=itemgetter(0), reverse=True)
+    animalRecommend.sort(key=itemgetter(0), reverse=True)
 
     # animalScore와 animalRecommend를 대응 정렬
     # sorted_animalScore = np.sort(animalScore)
     # https://bit.ly/3PBm81D
-    sorted_index_animalScore = np.argsort(animalScore)
-    sorted_animalRecommend = [animalRecommend[i] for i in sorted_index_animalScore]
+
 
     return sorted_animalRecommend
+    
+# 사용자 preference 정보
+# https://needneo.tistory.com/95 
+val_name = str(sys.argv[1])
+val_userEmail = str(sys.argv[2])
+val_breed = str(sys.argv[3])
+val_age = str(sys.argv[4])
+val_sex = str(sys.argv[5])
+val_color = str(sys.argv[6])
+val_type = str(sys.argv[7])
+val_userLoc = str(sys.argv[8])
 
 
-userPreference = ['치와와', 3, '암컷','흰색','소형견', '경상북도 고양시']
-animalInfo = getAnimalInfo(userPreference[5].split(' ')[0])
+userPreference = [val_breed, val_age, val_sex, val_color, val_type, val_userLoc]
+animalInfo = getAnimalInfo(userPreference[5].split(' ')[0]) # val_userLoc 정보를 이용해서 그 주변의 동물 정보 가져오기
 
 animalRecommend = getAnimalRecommend(userPreference, animalInfo)
 
-if len(animalRecommend)>30:
-    animalRecommend = animalRecommend[:30]
+# 30개만 가져오기
+# if len(animalRecommend)>30:
+#     animalRecommend = animalRecommend[:30]
 
 df = pd.DataFrame(animalRecommend, columns=['age','careAddr','careNm','careTel','chargeNm','colorCd','desertionNo','filename','happenDt','happenPlace','kindCd','neuterYn','noticeEdt','noticeNo','noticeSdt','officetel','orgNm','popfile','processState','sexCd','specialMark'])
 
 
 js = df.to_json(orient='table', force_ascii=False)
-print(js)
+print(js) # 반드시 출력해줘야함
