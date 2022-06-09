@@ -82,8 +82,6 @@ app.get('/Match/get', (req, res)=>{
 	  console.log("code",code);
       console.log("data1", data1);
       res.send(data1);
-
-
     });
 
     pythonOne.on('exit', function (code, signal) {

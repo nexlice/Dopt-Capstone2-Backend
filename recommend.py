@@ -100,13 +100,17 @@ def getAnimalRecommend(userPreference, animalInfos):
             
             animalScore.append(score)
             animalRecommend.append([animalInfo['age'],animalInfo['careAddr'],animalInfo['careNm'],animalInfo['careTel'],animalInfo['chargeNm'],animalInfo['colorCd'],animalInfo['desertionNo'],animalInfo['filename'],animalInfo['happenDt'],animalInfo['happenPlace'],animalInfo['kindCd'],animalInfo['neuterYn'],animalInfo['noticeEdt'],animalInfo['noticeNo'],animalInfo['noticeSdt'],animalInfo['officetel'],animalInfo['orgNm'],animalInfo['popfile'],animalInfo['processState'],animalInfo['sexCd'],animalInfo['specialMark']])
-            
-    sorted_index_animalScore = np.argsort(animalScore)
+            # if '고양이' in animalInfo['kindCd']:
+            #     print('score : ',score)
+            #     print(animalInfo)
+
+
+    sorted_index_animalScore = np.argsort(animalScore)[::-1]
     sorted_animalRecommend = [animalRecommend[i] for i in sorted_index_animalScore]
     # 위에꺼 설명
     # animalRecommend를 score가 높은 순으로 정렬
     # https://bit.ly/39GI9M2 (파이썬 다중 리스트 정렬)
-    animalRecommend.sort(key=itemgetter(0), reverse=True)
+    # sorted_animalRecommend.sort(key=itemgetter(0), reverse=True)
 
     # animalScore와 animalRecommend를 대응 정렬
     # sorted_animalScore = np.sort(animalScore)
